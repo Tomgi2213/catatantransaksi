@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kas DKM — Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; }
+
+/* ===== LOGIN ===== */
+#loginPage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.login-card {
+  width: 420px; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.login-header {
+  background: linear-gradient(135deg, #1a3a6b, #2563a8);
+  color: white; padding: 32px 32px 28px; text-align: center;
+}
+.login-logo {
+  width: 72px; height: 72px; border-radius: 16px;
+  background: white; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; font-size: 28px; color: #1565c0; font-weight: 700;
+}
+.login-header h2 { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
+.login-header p { font-size: 13px; opacity: 0.8; margin: 0; }
+.login-body {
+  background: #e8f0fe; padding: 32px;
+}
+.login-body .form-label { font-weight: 600; font-size: 14px; }
+.login-body .form-control {
+  border-radius: 10px; border: 1.5px solid #c5d5f0;
+  padding: 12px 14px; font-size: 14px; background: white;
+}
+.login-body .form-control:focus { border-color: #1565c0; box-shadow: 0 0 0 3px rgba(21,101,192,0.15); }
+.btn-signin {
+  background: #1565c0; color: white; border: none; border-radius: 10px;
+  padding: 13px; font-size: 15px; font-weight: 600; width: 100%; cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-signin:hover { background: #0d47a1; }
+.login-err { color: #c62828; font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+
+/* ===== MAIN LAYOUT ===== */
+#appPage { display: none; min-height: 100vh; }
+.app-wrap { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 220px; background: white; border-right: 1px solid #e0e0e0;
+  display: flex; flex-direction: column; flex-shrink: 0;
+  position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;
+}
+.sidebar-brand {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.sidebar-brand .brand-title { font-size: 15px; font-weight: 700; color: #1a237e; margin: 0; }
+.sidebar-brand .brand-sub { font-size: 11px; color: #9e9e9e; margin: 2px 0 0; }
+.sidebar-logo {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, #1565c0, #42a5f5);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px; margin-bottom: 10px;
+}
+.sidebar-nav { flex: 1; padding: 12px 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px; font-size: 14px; color: #424242;
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { background: #f5f5f5; color: #1565c0; }
+.nav-item.active { background: #e8f0fe; color: #1565c0; border-left-color: #1565c0; font-weight: 600; }
+.nav-item i { width: 18px; text-align: center; font-size: 15px; }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid #f0f0f0; font-size: 12px; color: #9e9e9e; }
+
+/* Header */
+.main-area { margin-left: 220px; flex: 1; display: flex; flex-direction: column; }
+.topbar {
+  background: white; border-bottom: 1px solid #e0e0e0;
+  padding: 0 28px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 18px; font-weight: 700; color: #1a237e; }
+.topbar-title small { display: block; font-size: 12px; font-weight: 400; color: #9e9e9e; margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.user-info { text-align: right; }
+.user-info .user-email { font-size: 13px; font-weight: 600; color: #212121; }
+.user-info .user-role { font-size: 11px; color: #1565c0; font-weight: 600; }
+.btn-signout {
+  background: #e53935; color: white; border: none;
+  border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.btn-signout:hover { background: #c62828; }
+
+/* Content */
+.content { padding: 28px; flex: 1; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Welcome bar */
+.welcome-bar {
+  background: #e8f5e9; border: 1px solid #c8e6c9;
+  border-radius: 10px; padding: 12px 18px;
+  color: #2e7d32; font-size: 14px; margin-bottom: 24px;
+}
+
+/* Cards */
+.stat-card {
+  background: white; border-radius: 14px; padding: 22px 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;
+}
+.stat-card .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #9e9e9e; margin-bottom: 6px; }
+.stat-card .stat-val { font-size: 36px; font-weight: 700; color: #212121; line-height: 1; }
+.stat-card .stat-sub { font-size: 12px; color: #9e9e9e; margin-top: 4px; }
+.stat-card.success { border-left: 4px solid #43a047; }
+.stat-card.danger { border-left: 4px solid #e53935; }
+.stat-card.primary { border-left: 4px solid #1565c0; }
+
+.white-card {
+  background: white; border-radius: 14px; padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #f0f0f0;
+}
+.card-heading { font-size: 16px; font-weight: 700; color: #1a237e; margin: 0 0 20px; }
+
+/* Form input */
+.form-label { font-size: 13px; font-weight: 600; color: #424242; }
+.form-control, .form-select {
+  border-radius: 10px; border: 1.5px solid #e0e0e0;
+  padding: 10px 14px; font-size: 14px;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #1565c0; box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
+}
+.btn-primary-main {
+  background: #1565c0; color: white; border: none;
+  border-radius: 10px; padding: 11px 28px; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.btn-primary-main:hover { background: #0d47a1; }
+.btn-secondary-main {
+  background: white; color: #424242; border: 1.5px solid #e0e0e0;
+  border-radius: 10px; padding: 11px 20px; font-size: 14px; cursor: pointer;
+}
+
+/* Table */
+.table-head th { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #9e9e9e; border: none; padding: 10px 14px; background: #fafafa; }
+.table-body td { font-size: 13px; padding: 12px 14px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+.table-body tr:last-child td { border-bottom: none; }
+.badge-masuk { background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.badge-keluar { background: #ffebee; color: #c62828; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.badge-status-ok { background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
+.num-right { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.text-success-main { color: #2e7d32; }
+.text-danger-main { color: #c62828; }
+
+/* Filter row */
+.filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.filter-row .form-control, .filter-row .form-select { height: 38px; font-size: 13px; }
+.btn-filter { background: #1565c0; color: white; border: none; border-radius: 10px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+/* Charts */
+.chart-wrap { position: relative; height: 240px; }
+
+/* Alert */
+.alert-info-custom { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #1565c0; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; }
+  .sidebar-brand .brand-title, .sidebar-brand .brand-sub, .nav-item span, .sidebar-footer { display: none; }
+  .main-area { margin-left: 60px; }
+  .nav-item { justify-content: center; padding: 14px; }
+  .nav-item i { width: auto; }
+}
+
+.loading-spin { text-align: center; padding: 40px; color: #9e9e9e; }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo"><i class="fa-solid fa-mosque"></i></div>
+      <h2>Kas DKM Dashboard</h2>
+      <p>Sistem Monitoring Keuangan DKM</p>
+    </div>
+    <div class="login-body">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" id="loginUser" placeholder="Masukkan username" autocomplete="username">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" id="loginPass" placeholder="Masukkan password" autocomplete="current-password">
+      </div>
+      <button class="btn-signin" onclick="doLogin()">Sign In</button>
+      <div class="login-err" id="loginErr">Username atau password salah.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP PAGE ===== -->
+<div id="appPage">
+  <div class="app-wrap">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo"><i class="fa-solid fa-mosque"></i></div>
+        <p class="brand-title">Kas DKM</p>
+        <p class="brand-sub">Keuangan & Laporan</p>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" onclick="showPage('pageInput')">
+          <i class="fa-solid fa-pen-to-square"></i><span>Input Transaksi</span>
+        </a>
+        <a class="nav-item" onclick="showPage('pageReport')">
+          <i class="fa-solid fa-chart-line"></i><span>Laporan & Riwayat</span>
+        </a>
+        <a class="nav-item" onclick="showPage('pageSettings')">
+          <i class="fa-solid fa-gear"></i><span>Pengaturan</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">v3.0 · DKM</div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-area">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title" id="topbarTitle">Input Transaksi</div>
+        </div>
+        <div class="topbar-right">
+          <div class="user-info">
+            <div class="user-email" id="topbarUser">admin</div>
+            <div class="user-role">ADMIN</div>
+          </div>
+          <button class="btn-signout" onclick="doLogout()">Sign Out</button>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- ===== PAGE: INPUT TRANSAKSI ===== -->
+        <div class="page active" id="pageInput">
+          <div class="welcome-bar">
+            <i class="fa-solid fa-circle-check me-2"></i>Selamat datang, <strong id="welcomeUser">admin</strong>!
+          </div>
+
+          <!-- Summary mini -->
+          <div class="row g-3 mb-4" id="inputSummaryRow">
+            <div class="col-md-4">
+              <div class="stat-card primary">
+                <div class="stat-label">Saldo Saat Ini</div>
+                <div class="stat-val" id="iSaldo" style="font-size:22px;">—</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card success">
+                <div class="stat-label">Pemasukan Bulan Ini</div>
+                <div class="stat-val" id="iIn" style="font-size:22px; color:#2e7d32;">—</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card danger">
+                <div class="stat-label">Pengeluaran Bulan Ini</div>
+                <div class="stat-val" id="iOut" style="font-size:22px; color:#c62828;">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="white-card">
+            <div class="card-heading"><i class="fa-solid fa-plus-circle me-2 text-primary"></i>Tambah Transaksi Baru</div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="fTanggal">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Jenis Transaksi <span class="text-danger">*</span></label>
+                <select class="form-select" id="fJenis">
+                  <option value="MASUK">Pemasukan</option>
+                  <option value="KELUAR">Pengeluaran</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Keterangan <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="fKet" placeholder="cth: Infaq Jumat, Bayar Listrik, Kotak Amal, dll">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Nominal (Rp) <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="fNominal" placeholder="0" inputmode="numeric">
+                <div class="mt-1" style="font-size:12px; color:#1565c0; font-weight:600;" id="fNominalPreview"></div>
+              </div>
+              <div class="col-md-6 d-flex align-items-end">
+                <div id="formMsg" class="w-100"></div>
+              </div>
+              <div class="col-12">
+                <button class="btn-primary-main me-2" id="btnSimpan" onclick="simpanTransaksi()">
+                  <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Transaksi
+                </button>
+                <button class="btn-secondary-main" onclick="resetForm()">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Riwayat singkat -->
+          <div class="white-card mt-3">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="card-heading mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i>5 Transaksi Terakhir</div>
+              <a onclick="showPage('pageReport')" style="font-size:13px; color:#1565c0; cursor:pointer; text-decoration:none;">
+                Lihat semua <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+            <div id="recentTx">
+              <div class="loading-spin"><i class="fa-solid fa-circle-notch fa-spin"></i> Memuat...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PAGE: LAPORAN & RIWAYAT ===== -->
+        <div class="page" id="pageReport">
+
+          <!-- Stat cards -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="stat-card primary">
+                <div class="stat-label">Total Saldo</div>
+                <div class="stat-val" id="rSaldo">—</div>
+                <div class="stat-sub">Semua waktu</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card success">
+                <div class="stat-label">Total Pemasukan</div>
+                <div class="stat-val" id="rTotalIn" style="color:#2e7d32;">—</div>
+                <div class="stat-sub" id="rCountIn">—</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="stat-card danger">
+                <div class="stat-label">Total Pengeluaran</div>
+                <div class="stat-val" id="rTotalOut" style="color:#c62828;">—</div>
+                <div class="stat-sub" id="rCountOut">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts row -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-8">
+              <div class="white-card h-100">
+                <div class="card-heading"><i class="fa-solid fa-chart-column me-2"></i>Trend per Bulan</div>
+                <div class="chart-wrap">
+                  <canvas id="barChart" role="img" aria-label="Grafik pemasukan dan pengeluaran per bulan"></canvas>
+                </div>
+                <div class="d-flex gap-3 mt-2" style="font-size:12px; color:#757575;">
+                  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#43a047;margin-right:4px;"></span>Pemasukan</span>
+                  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e53935;margin-right:4px;"></span>Pengeluaran</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="white-card h-100">
+                <div class="card-heading"><i class="fa-solid fa-chart-pie me-2"></i>Bulan Ini</div>
+                <div style="position:relative; height:180px;">
+                  <canvas id="donutChart" role="img" aria-label="Komposisi bulan ini"></canvas>
+                </div>
+                <div class="text-center mt-2" id="donutInfo" style="font-size:13px; color:#757575;">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="white-card">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+              <div class="card-heading mb-0"><i class="fa-solid fa-list me-2"></i>Riwayat Transaksi <span style="font-size:12px; background:#e3f2fd; color:#1565c0; padding:3px 10px; border-radius:20px; font-weight:600;" id="txBadge"></span></div>
+            </div>
+            <div class="filter-row">
+              <select class="form-select" id="filterBulan" style="max-width:180px;"></select>
+              <input type="date" class="form-control" id="filterStart" style="max-width:160px;">
+              <input type="date" class="form-control" id="filterEnd" style="max-width:160px;">
+              <button class="btn-filter" onclick="applyFilter()"><i class="fa-solid fa-filter me-1"></i>Terapkan</button>
+              <button class="btn-secondary-main" onclick="resetFilter()">Reset</button>
+            </div>
+            <div style="overflow-x:auto; max-height:420px; overflow-y:auto;">
+              <table class="table mb-0" style="min-width:600px;">
+                <thead>
+                  <tr class="table-head">
+                    <th>Tanggal</th>
+                    <th>Jenis</th>
+                    <th>Keterangan</th>
+                    <th class="text-end">Nominal</th>
+                    <th class="text-end">Saldo</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="txBody" class="table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PAGE: PENGATURAN ===== -->
+        <div class="page" id="pageSettings">
+          <div class="white-card" style="max-width:560px;">
+            <div class="card-heading"><i class="fa-solid fa-gear me-2"></i>Pengaturan Koneksi</div>
+            <div class="mb-3">
+              <label class="form-label">Sheet ID Google Sheet</label>
+              <input type="text" class="form-control" id="sheetId" value="1f9tcvT061NqcYzoS9EPMo1LijiDBvz5NLd3hCHNv9gc">
+              <small class="text-muted">Sheet harus diset "Anyone with the link can view".</small>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">URL Apps Script Web App</label>
+              <input type="text" class="form-control" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+              <small class="text-muted">Didapat setelah deploy kode Apps Script gabungan.</small>
+            </div>
+            <hr>
+            <div class="card-heading mt-3"><i class="fa-solid fa-lock me-2"></i>Ganti Password</div>
+            <div class="mb-3">
+              <label class="form-label">Password Baru</label>
+              <input type="password" class="form-control" id="newPass" placeholder="Masukkan password baru">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Konfirmasi Password</label>
+              <input type="password" class="form-control" id="confirmPass" placeholder="Ulangi password baru">
+            </div>
+            <div class="mb-4" id="passMsg"></div>
+            <button class="btn-primary-main" onclick="saveSettings()">
+              <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Pengaturan
+            </button>
+            <div class="mt-3 alert-info-custom">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              Username default: <strong>admin</strong> · Password default: <strong>dkm123</strong>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /main-area -->
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let allRows = [];
+let barChart = null, donutChart = null;
+let currentUser = '';
+
+// ===== AUTH =====
+const DEFAULT_USER = 'admin';
+const DEFAULT_PASS = 'dkm123';
+
+function getCredentials() {
+  return JSON.parse(localStorage.getItem('dkm_credentials') || JSON.stringify({ user: DEFAULT_USER, pass: DEFAULT_PASS }));
+}
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const creds = getCredentials();
+  if (u === creds.user && p === creds.pass) {
+    currentUser = u;
+    document.getElementById('loginErr').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').style.display = 'block';
+    document.getElementById('topbarUser').textContent = u;
+    document.getElementById('welcomeUser').textContent = u;
+    loadSettings();
+    loadData();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginPage').style.display !== 'none') doLogin();
+});
+
+function doLogout() {
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('appPage').style.display = 'none';
+  document.getElementById('loginPass').value = '';
+}
+
+// ===== NAVIGATION =====
+const pageTitles = { pageInput: 'Input Transaksi', pageReport: 'Laporan & Riwayat', pageSettings: 'Pengaturan' };
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item')[['pageInput','pageReport','pageSettings'].indexOf(id)].classList.add('active');
+  document.getElementById('topbarTitle').textContent = pageTitles[id];
+}
+
+// ===== SETTINGS =====
+function loadSettings() {
+  const s = JSON.parse(localStorage.getItem('dkm_settings') || '{}');
+  if (s.sheetId) document.getElementById('sheetId').value = s.sheetId;
+  if (s.scriptUrl) document.getElementById('scriptUrl').value = s.scriptUrl;
+}
+
+function saveSettings() {
+  const sheetId = document.getElementById('sheetId').value.trim();
+  const scriptUrl = document.getElementById('scriptUrl').value.trim();
+  localStorage.setItem('dkm_settings', JSON.stringify({ sheetId, scriptUrl }));
+
+  const np = document.getElementById('newPass').value;
+  const cp = document.getElementById('confirmPass').value;
+  const msgEl = document.getElementById('passMsg');
+  if (np || cp) {
+    if (np !== cp) {
+      msgEl.innerHTML = '<div class="alert alert-danger py-2" style="font-size:13px;">Password tidak cocok.</div>'; return;
+    }
+    if (np.length < 4) {
+      msgEl.innerHTML = '<div class="alert alert-danger py-2" style="font-size:13px;">Password minimal 4 karakter.</div>'; return;
+    }
+    const creds = getCredentials();
+    creds.pass = np;
+    localStorage.setItem('dkm_credentials', JSON.stringify(creds));
+    msgEl.innerHTML = '<div class="alert alert-success py-2" style="font-size:13px;">Password berhasil diperbarui.</div>';
+    document.getElementById('newPass').value = '';
+    document.getElementById('confirmPass').value = '';
+  }
+
+  showToastSimple('Pengaturan disimpan!');
+  loadData();
+}
+
+function showToastSimple(msg) {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;top:20px;right:20px;background:#1565c0;color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+  d.textContent = msg;
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 2500);
+}
+
+// ===== DATA =====
+function idr(n) { return 'Rp' + Math.round(n || 0).toLocaleString('id-ID'); }
+function parseNum(v) {
+  if (v == null) return 0;
+  v = String(v).replace(/[^0-9.\-]/g, '');
+  return v === '' ? 0 : parseFloat(v);
+}
+function namaBulan(i) { return ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][i] || ''; }
+function namaBulanFull(i) { return ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][i] || ''; }
+
+// Ambil data via JSONP — intercept google.visualization.Query.setResponse
+// Bekerja dari file:// karena script tag tidak kena CORS restriction
+function fetchGviz(range) {
+  return new Promise((resolve, reject) => {
+    const id = document.getElementById('sheetId').value.trim();
+    let url = 'https://docs.google.com/spreadsheets/d/' + id + '/gviz/tq?tqx=out:json';
+    if (range) url += '&range=' + encodeURIComponent(range);
+
+    if (!window.google) window.google = {};
+    if (!window.google.visualization) window.google.visualization = {};
+    if (!window.google.visualization.Query) window.google.visualization.Query = {};
+
+    const prevHandler = window.google.visualization.Query.setResponse;
+
+    const timer = setTimeout(function() {
+      cleanup();
+      reject(new Error('Timeout — pastikan sheet sudah diset "Anyone with the link can view".'));
+    }, 12000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      window.google.visualization.Query.setResponse = prevHandler;
+      try { if (script.parentNode) script.parentNode.removeChild(script); } catch(e) {}
+    }
+
+    window.google.visualization.Query.setResponse = function(response) {
+      cleanup();
+      if (response && response.table) resolve(response.table);
+      else reject(new Error('Respons tidak valid.'));
+    };
+
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = function() { cleanup(); reject(new Error('Gagal memuat — cek koneksi internet.')); };
+    document.head.appendChild(script);
+  });
+}
+
+function showDataError(msg) {
+  const errHtml = `<div class="alert-info-custom"><i class="fa-solid fa-triangle-exclamation me-2"></i>${msg} <a onclick="loadData()" style="cursor:pointer;color:#1565c0;font-weight:600;">Coba lagi</a></div>`;
+  document.getElementById('recentTx').innerHTML = errHtml;
+  // Tampilkan error di halaman laporan juga
+  document.getElementById('txBody').innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa-solid fa-circle-exclamation me-2 text-warning"></i>${msg}</td></tr>`;
+  document.getElementById('txBadge').textContent = 'error';
+}
+
+async function loadData() {
+  document.getElementById('recentTx').innerHTML = '<div class="loading-spin"><i class="fa-solid fa-circle-notch fa-spin"></i> Memuat...</div>';
+  document.getElementById('txBody').innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Memuat data...</td></tr>';
+  try {
+    // Ambil data utama dulu, lalu saldo awal
+    const tableMain = await fetchGviz('A:D');
+    let saldoAwal = 0;
+    try {
+      const tableSaldo = await fetchGviz('G1');
+      saldoAwal = parseNum(tableSaldo.rows?.[0]?.c?.[0]?.v);
+    } catch(e) {}
+
+    const cols = tableMain.cols.map(c => (c.label || c.id || '').toLowerCase());
+    const iT    = cols.findIndex(c => c.includes('tanggal'));
+    const iTipe = cols.findIndex(c => c.includes('tipe'));
+    const iN    = cols.findIndex(c => c.includes('nominal'));
+    const iK    = cols.findIndex(c => c.includes('keterangan'));
+
+    if (iT < 0 || iTipe < 0 || iN < 0) {
+      showDataError('Nama kolom di sheet tidak cocok. Pastikan header kolom: Tanggal, Tipe, Nominal, Keterangan.'); return;
+    }
+
+    let saldo = saldoAwal;
+    allRows = (tableMain.rows || []).map(r => {
+      const cells = r.c || [];
+      const get = idx => idx >= 0 && cells[idx] ? (cells[idx].f ?? cells[idx].v) : null;
+      const tipe = (get(iTipe) || '').toString().toUpperCase().trim();
+      const nominal = parseNum(get(iN));
+      const masuk = tipe === 'MASUK' ? nominal : 0;
+      const keluar = tipe === 'KELUAR' ? nominal : 0;
+      saldo += masuk - keluar;
+      let tglObj = null;
+      try { tglObj = new Date(get(iT)); if (isNaN(tglObj)) tglObj = null; } catch(e) {}
+      return { tipe, nominal, masuk, keluar, saldo, ket: get(iK) || '', tglStr: get(iT) || '', tglObj };
+    }).filter(r => r.ket || r.masuk || r.keluar);
+
+    buildFilterBulan();
+    renderAll();
+  } catch(e) {
+    showDataError('Gagal memuat data: ' + e.message);
+  }
+}
+
+// ===== RENDER =====
+function renderAll() {
+  const now = new Date();
+  const thisMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  const thisBln = allRows.filter(r => r.tglObj && (r.tglObj.getFullYear()+'-'+String(r.tglObj.getMonth()+1).padStart(2,'0')) === thisMonth);
+  const inBln = thisBln.reduce((s,r) => s+r.masuk, 0);
+  const outBln = thisBln.reduce((s,r) => s+r.keluar, 0);
+  const lastSaldo = allRows.length ? allRows[allRows.length-1].saldo : 0;
+  const totalIn = allRows.reduce((s,r) => s+r.masuk, 0);
+  const totalOut = allRows.reduce((s,r) => s+r.keluar, 0);
+
+  // Input page
+  document.getElementById('iSaldo').textContent = idr(lastSaldo);
+  document.getElementById('iIn').textContent = idr(inBln);
+  document.getElementById('iOut').textContent = idr(outBln);
+
+  // Report page
+  document.getElementById('rSaldo').textContent = idr(lastSaldo);
+  document.getElementById('rTotalIn').textContent = idr(totalIn);
+  document.getElementById('rTotalOut').textContent = idr(totalOut);
+  document.getElementById('rCountIn').textContent = allRows.filter(r=>r.masuk>0).length + ' transaksi masuk';
+  document.getElementById('rCountOut').textContent = allRows.filter(r=>r.keluar>0).length + ' transaksi keluar';
+
+  // Recent 5
+  const recent = allRows.slice().reverse().slice(0, 5);
+  document.getElementById('recentTx').innerHTML = recent.length ? `
+    <table class="table mb-0">
+      <thead><tr class="table-head"><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th class="text-end">Nominal</th><th class="text-end">Saldo</th></tr></thead>
+      <tbody class="table-body">${recent.map(r => renderRow(r)).join('')}</tbody>
+    </table>` : '<div style="color:#9e9e9e; text-align:center; padding:20px;">Belum ada data</div>';
+
+  renderTable(allRows);
+  renderCharts();
+}
+
+function renderRow(r) {
+  const tglFmt = r.tglObj ? r.tglObj.toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'}) : r.tglStr;
+  const badgeCls = r.tipe === 'MASUK' ? 'badge-masuk' : 'badge-keluar';
+  const badgeTxt = r.tipe === 'MASUK' ? 'Pemasukan' : 'Pengeluaran';
+  const nominalTxt = r.tipe === 'MASUK'
+    ? `<span class="text-success-main">+${idr(r.masuk)}</span>`
+    : `<span class="text-danger-main">-${idr(r.keluar)}</span>`;
+  return `<tr>
+    <td style="font-size:12px; color:#757575; white-space:nowrap;">${tglFmt}</td>
+    <td><span class="${badgeCls}">${badgeTxt}</span></td>
+    <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.ket}</td>
+    <td class="num-right">${nominalTxt}</td>
+    <td class="num-right" style="font-size:12px; color:#757575;">${idr(r.saldo)}</td>
+    <td><span class="badge-status-ok">Completed</span></td>
+  </tr>`;
+}
+
+function renderTable(rows) {
+  const reversed = rows.slice().reverse();
+  document.getElementById('txBadge').textContent = reversed.length + ' transaksi';
+  document.getElementById('txBody').innerHTML = reversed.length
+    ? reversed.map(r => renderRow(r)).join('')
+    : '<tr><td colspan="6" class="text-center text-muted py-4">Belum ada data</td></tr>';
+}
+
+function buildFilterBulan() {
+  const sel = document.getElementById('filterBulan');
+  const bulanSet = new Set();
+  allRows.forEach(r => { if(r.tglObj) bulanSet.add(r.tglObj.getFullYear()+'-'+String(r.tglObj.getMonth()+1).padStart(2,'0')); });
+  const sorted = [...bulanSet].sort().reverse();
+  sel.innerHTML = '<option value="">Semua Bulan</option>' + sorted.map(b => {
+    const [y, m] = b.split('-');
+    return `<option value="${b}">${namaBulanFull(+m-1)} ${y}</option>`;
+  }).join('');
+}
+
+function applyFilter() {
+  const bulan = document.getElementById('filterBulan').value;
+  const start = document.getElementById('filterStart').value ? new Date(document.getElementById('filterStart').value) : null;
+  const end = document.getElementById('filterEnd').value ? new Date(document.getElementById('filterEnd').value + 'T23:59:59') : null;
+  let filtered = allRows.filter(r => {
+    if (bulan && r.tglObj) {
+      const k = r.tglObj.getFullYear()+'-'+String(r.tglObj.getMonth()+1).padStart(2,'0');
+      if (k !== bulan) return false;
+    }
+    if (start && r.tglObj && r.tglObj < start) return false;
+    if (end && r.tglObj && r.tglObj > end) return false;
+    return true;
+  });
+  renderTable(filtered);
+}
+
+function resetFilter() {
+  document.getElementById('filterBulan').value = '';
+  document.getElementById('filterStart').value = '';
+  document.getElementById('filterEnd').value = '';
+  renderTable(allRows);
+}
+
+// ===== CHARTS =====
+function renderCharts() {
+  const now = new Date();
+  const byMonth = {};
+  allRows.forEach(r => {
+    if (!r.tglObj) return;
+    const key = r.tglObj.getFullYear()+'-'+String(r.tglObj.getMonth()+1).padStart(2,'0');
+    if (!byMonth[key]) byMonth[key] = { in:0, out:0 };
+    byMonth[key].in += r.masuk;
+    byMonth[key].out += r.keluar;
+  });
+  const months = Object.keys(byMonth).sort().slice(-6);
+  const labels = months.map(m => { const [y,mo] = m.split('-'); return namaBulan(+mo-1)+' '+y.slice(2); });
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label:'Pemasukan', data: months.map(m=>byMonth[m].in), backgroundColor:'#43a047', borderRadius:4, barPercentage:0.7 },
+        { label:'Pengeluaran', data: months.map(m=>byMonth[m].out), backgroundColor:'#e53935', borderRadius:4, barPercentage:0.7 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ grid:{ display:false }, ticks:{ font:{ size:11 } } },
+        y:{ grid:{ color:'#f5f5f5' }, ticks:{ font:{size:11}, callback: v => v>=1000000 ? 'Rp'+(v/1000000).toFixed(0)+'jt' : 'Rp'+(v/1000)+'rb' } }
+      }
+    }
+  });
+
+  const thisMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const inM = byMonth[thisMonth]?.in || 0;
+  const outM = byMonth[thisMonth]?.out || 0;
+
+  if (donutChart) donutChart.destroy();
+  donutChart = new Chart(document.getElementById('donutChart'), {
+    type:'doughnut',
+    data:{
+      labels:['Pemasukan','Pengeluaran'],
+      datasets:[{ data:[inM,outM], backgroundColor:['#43a047','#e53935'], borderWidth:0 }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label: ctx=>' '+idr(ctx.parsed) } } }
+    }
+  });
+
+  const selisih = inM - outM;
+  const mn = namaBulanFull(now.getMonth());
+  document.getElementById('donutInfo').innerHTML = `<strong>${mn}</strong><br>`
+    + (selisih >= 0
+      ? `<span style="color:#2e7d32; font-weight:600;">Surplus ${idr(selisih)}</span>`
+      : `<span style="color:#c62828; font-weight:600;">Defisit ${idr(Math.abs(selisih))}</span>`);
+}
+
+// ===== FORM INPUT =====
+document.getElementById('fNominal').addEventListener('input', function() {
+  const n = parseInt(this.value.replace(/\D/g,'')) || 0;
+  document.getElementById('fNominalPreview').textContent = n > 0 ? idr(n) : '';
+});
+
+function resetForm() {
+  document.getElementById('fTanggal').value = '';
+  document.getElementById('fKet').value = '';
+  document.getElementById('fNominal').value = '';
+  document.getElementById('fNominalPreview').textContent = '';
+  document.getElementById('fJenis').value = 'MASUK';
+  document.getElementById('formMsg').innerHTML = '';
+}
+
+// Set tanggal default hari ini
+document.getElementById('fTanggal').value = new Date().toISOString().split('T')[0];
+
+async function simpanTransaksi() {
+  const scriptUrl = document.getElementById('scriptUrl').value.trim();
+  const tgl = document.getElementById('fTanggal').value;
+  const tipe = document.getElementById('fJenis').value;
+  const ket = document.getElementById('fKet').value.trim();
+  const nominal = parseInt(document.getElementById('fNominal').value.replace(/\D/g,'')) || 0;
+  const msgEl = document.getElementById('formMsg');
+
+  if (!scriptUrl) {
+    msgEl.innerHTML = '<div class="alert alert-warning py-2 mb-0" style="font-size:13px;"><i class="fa-solid fa-triangle-exclamation me-1"></i>Isi URL Apps Script di Pengaturan dulu.</div>';
+    return;
+  }
+  if (!tgl || !ket || nominal <= 0) {
+    msgEl.innerHTML = '<div class="alert alert-danger py-2 mb-0" style="font-size:13px;"><i class="fa-solid fa-circle-xmark me-1"></i>Lengkapi semua field.</div>';
+    return;
+  }
+
+  const btn = document.getElementById('btnSimpan');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i>Menyimpan...';
+  msgEl.innerHTML = '';
+
+  try {
+    await fetch(scriptUrl, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ source:'dashboard', tanggal:tgl, tipe, nominal, keterangan:ket })
+    });
+    msgEl.innerHTML = '<div class="alert alert-success py-2 mb-0" style="font-size:13px;"><i class="fa-solid fa-circle-check me-1"></i>Transaksi berhasil disimpan! Memuat ulang data...</div>';
+    resetForm();
+    document.getElementById('fTanggal').value = new Date().toISOString().split('T')[0];
+    setTimeout(loadData, 1500);
+  } catch(err) {
+    msgEl.innerHTML = `<div class="alert alert-danger py-2 mb-0" style="font-size:13px;"><i class="fa-solid fa-circle-xmark me-1"></i>Gagal: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i>Simpan Transaksi';
+  }
+}
+</script>
+</body>
+</html>
