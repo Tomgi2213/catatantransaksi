@@ -174,90 +174,68 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sa
 /* Alert */
 .alert-info-custom { background: #e3f2fd; border: 1px solid #90caf9; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #1565c0; }
 
-/* ===== BOTTOM NAV MOBILE ===== */
-.bottom-nav {
-  display: none;
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-  background: white; border-top: 1px solid #e0e0e0;
-  height: 60px;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-}
-.bottom-nav-items {
-  display: flex; height: 100%;
-}
-.bottom-nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 3px; cursor: pointer;
-  font-size: 10px; color: #9e9e9e; font-weight: 600; text-transform: uppercase;
-  border: none; background: none; padding: 0;
-  transition: color 0.15s;
-}
-.bottom-nav-item i { font-size: 18px; }
-.bottom-nav-item.active { color: #1565c0; }
-.bottom-nav-item.active i { color: #1565c0; }
-
 /* ===== RESPONSIVE MOBILE ===== */
 @media (max-width: 768px) {
-  /* Sembunyikan sidebar desktop, tampilkan bottom nav */
-  .sidebar { display: none; }
-  .bottom-nav { display: flex; }
-  .main-area { margin-left: 0; padding-bottom: 60px; }
+  /* Sidebar icon-only di mobile */
+  .sidebar { width: 54px; }
+  .sidebar-brand { padding: 14px 0; display: flex; justify-content: center; }
+  .sidebar-brand .brand-title,
+  .sidebar-brand .brand-sub { display: none; }
+  .sidebar-logo { margin: 0; width: 32px; height: 32px; font-size: 14px; }
+  .sidebar-nav { padding: 8px 0; }
+  .nav-item { justify-content: center; padding: 14px 0; border-left: 3px solid transparent; }
+  .nav-item span { display: none; }
+  .nav-item i { width: auto; font-size: 18px; }
+  .sidebar-footer { display: none; }
+  .main-area { margin-left: 54px; }
 
-  /* Topbar lebih compact */
-  .topbar { padding: 0 16px; height: 52px; }
-  .topbar-title { font-size: 15px; }
+  /* Topbar compact */
+  .topbar { padding: 0 12px; height: 50px; }
+  .topbar-title { font-size: 14px; }
   .topbar-title small { display: none; }
-  .user-info .user-email { font-size: 12px; }
-  .user-info .user-role { font-size: 10px; }
+  .user-info { display: none; }
   .btn-signout { padding: 5px 10px; font-size: 12px; }
 
-  /* Content padding lebih kecil */
-  .content { padding: 14px 12px; }
+  /* Content */
+  .content { padding: 12px 10px; }
 
-  /* Stat cards full width di mobile */
-  .stat-card { padding: 14px 16px; }
-  .stat-card .stat-val { font-size: 22px; }
+  /* Cards */
+  .stat-card { padding: 12px 14px; }
+  .stat-card .stat-val { font-size: 20px; }
+  .white-card { padding: 14px 12px; }
+  .card-heading { font-size: 14px; margin-bottom: 12px; }
+  .welcome-bar { padding: 10px 12px; font-size: 13px; margin-bottom: 14px; }
 
-  /* Charts stack vertically */
-  .chart-wrap { height: 200px; }
+  /* Charts */
+  .chart-wrap { height: 180px; }
 
-  /* Welcome bar */
-  .welcome-bar { padding: 10px 14px; font-size: 13px; margin-bottom: 16px; }
+  /* Form */
+  .form-control, .form-select { padding: 11px 12px; font-size: 14px; }
+  .btn-primary-main { width: 100%; padding: 12px; font-size: 14px; margin-bottom: 8px; }
+  .btn-secondary-main { width: 100%; padding: 11px; font-size: 14px; }
 
-  /* White card padding lebih kecil */
-  .white-card { padding: 16px 14px; }
-  .card-heading { font-size: 14px; margin-bottom: 14px; }
-
-  /* Form lebih besar untuk touch */
-  .form-control, .form-select { padding: 12px 14px; font-size: 15px; }
-  .btn-primary-main { width: 100%; padding: 13px; font-size: 15px; margin-bottom: 8px; }
-  .btn-secondary-main { width: 100%; padding: 12px; font-size: 14px; }
-
-  /* Filter row stack vertical */
+  /* Filter stack vertical */
   .filter-row { flex-direction: column; align-items: stretch; }
   .filter-row .form-control, .filter-row .form-select { max-width: 100% !important; }
-  .btn-filter { width: 100%; padding: 10px; }
+  .btn-filter { width: 100%; }
 
-  /* Tabel mobile — sembunyikan kolom saldo & status */
+  /* Hide kolom tidak penting di tabel */
   .col-hide-mobile { display: none; }
 
-  /* Login card full width */
+  /* Login full screen */
   .login-card { width: 100%; min-height: 100vh; border-radius: 0; }
-  .login-header { padding: 48px 28px 28px; }
-  .login-body { padding: 28px; }
+  .login-header { padding: 40px 24px 24px; }
+  .login-body { padding: 24px; }
 
-  /* KPI cards 2 kolom */
-  .kpi-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  /* Recent tx table compact */
-  .tx-compact td { padding: 8px 10px; font-size: 12px; }
+  /* Row stat cards — 1 kolom */
+  .row.g-3 > [class*="col-md-4"],
+  .row.g-3 > [class*="col-md-8"] { flex: 0 0 100%; max-width: 100%; }
 }
 
 @media (max-width: 480px) {
-  .topbar-right { gap: 8px; }
-  .user-info { display: none; }
-  .content { padding: 12px 10px; }
-  .stat-card .stat-val { font-size: 18px; }
+  .content { padding: 10px 8px; }
+  .stat-card .stat-val { font-size: 17px; }
+  .topbar { padding: 0 8px; }
 }
 
 .loading-spin { text-align: center; padding: 40px; color: #9e9e9e; }
@@ -524,29 +502,37 @@ body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sa
               Username default: <strong>admin</strong> · Password default: <strong>dkm123</strong>
             </div>
           </div>
+
+          <!-- User Management -->
+          <div class="white-card mt-3" style="max-width:560px;">
+            <div class="card-heading"><i class="fa-solid fa-users me-2"></i>Manajemen Akun</div>
+            <p style="font-size:13px; color:#757575; margin-bottom:16px;">Tambah atau hapus akun yang bisa login ke dashboard ini.</p>
+            <div id="userList" class="mb-3"></div>
+            <hr>
+            <div class="card-heading mt-3" style="font-size:14px;"><i class="fa-solid fa-user-plus me-2"></i>Tambah Akun Baru</div>
+            <div class="row g-2 mt-1">
+              <div class="col-md-5">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="newUsername" placeholder="username baru">
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="newUserPass" placeholder="password">
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <button class="btn-primary-main w-100" onclick="addUser()" style="padding:10px;">Tambah</button>
+              </div>
+            </div>
+            <div id="userMsg" class="mt-2"></div>
+          </div>
+        </div>
         </div>
 
       </div><!-- /content -->
     </div><!-- /main-area -->
   </div>
 
-  <!-- Bottom Navigation (mobile only) -->
-  <nav class="bottom-nav">
-    <div class="bottom-nav-items">
-      <button class="bottom-nav-item active" id="bnInput" onclick="showPage('pageInput')">
-        <i class="fa-solid fa-pen-to-square"></i>
-        <span>Input</span>
-      </button>
-      <button class="bottom-nav-item" id="bnReport" onclick="showPage('pageReport')">
-        <i class="fa-solid fa-chart-line"></i>
-        <span>Laporan</span>
-      </button>
-      <button class="bottom-nav-item" id="bnSettings" onclick="showPage('pageSettings')">
-        <i class="fa-solid fa-gear"></i>
-        <span>Pengaturan</span>
-      </button>
-    </div>
-  </nav>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -559,15 +545,29 @@ let currentUser = '';
 const DEFAULT_USER = 'admin';
 const DEFAULT_PASS = 'dkm123';
 
+const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1puuDw3f4Trno8_E-eMNLv_NjFTVAxjrttmUGN5qrkvuV-yos3QWasGWPdGvuEe8k/exec';
+const DEFAULT_SHEET_ID = '1f9tcvT061NqcYzoS9EPMo1LijiDBvz5NLd3hCHNv9gc';
+
 function getCredentials() {
   return JSON.parse(localStorage.getItem('dkm_credentials') || JSON.stringify({ user: DEFAULT_USER, pass: DEFAULT_PASS }));
+}
+
+function getScriptUrl() {
+  const saved = JSON.parse(localStorage.getItem('dkm_settings') || '{}');
+  return saved.scriptUrl || DEFAULT_SCRIPT_URL;
+}
+
+function getSheetId() {
+  const saved = JSON.parse(localStorage.getItem('dkm_settings') || '{}');
+  return saved.sheetId || DEFAULT_SHEET_ID;
 }
 
 function doLogin() {
   const u = document.getElementById('loginUser').value.trim();
   const p = document.getElementById('loginPass').value;
-  const creds = getCredentials();
-  if (u === creds.user && p === creds.pass) {
+  const users = getAllUsers();
+  const matched = users.find(usr => usr.user === u && usr.pass === p);
+  if (matched) {
     currentUser = u;
     document.getElementById('loginErr').style.display = 'none';
     document.getElementById('loginPage').style.display = 'none';
@@ -593,31 +593,91 @@ function doLogout() {
 
 // ===== NAVIGATION =====
 const pageTitles = { pageInput: 'Input Transaksi', pageReport: 'Laporan & Riwayat', pageSettings: 'Pengaturan' };
-const bnMap = { pageInput: 'bnInput', pageReport: 'bnReport', pageSettings: 'bnSettings' };
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   const idx = ['pageInput','pageReport','pageSettings'].indexOf(id);
   const navItems = document.querySelectorAll('.nav-item');
   if (navItems[idx]) navItems[idx].classList.add('active');
-  const bn = document.getElementById(bnMap[id]);
-  if (bn) bn.classList.add('active');
   document.getElementById('topbarTitle').textContent = pageTitles[id];
   window.scrollTo(0, 0);
+  if (id === 'pageSettings') renderUserList();
+}
+
+// ===== USER MANAGEMENT =====
+function getAllUsers() {
+  const stored = localStorage.getItem('dkm_users');
+  if (stored) return JSON.parse(stored);
+  // Default: hanya admin
+  const creds = getCredentials();
+  return [{ user: creds.user, pass: creds.pass, role: 'admin' }];
+}
+
+function saveAllUsers(users) {
+  localStorage.setItem('dkm_users', JSON.stringify(users));
+  // Sync kredensial utama (akun pertama = admin)
+  const admin = users.find(u => u.role === 'admin');
+  if (admin) localStorage.setItem('dkm_credentials', JSON.stringify({ user: admin.user, pass: admin.pass }));
+}
+
+function renderUserList() {
+  const users = getAllUsers();
+  const el = document.getElementById('userList');
+  if (!el) return;
+  el.innerHTML = users.length === 0 ? '<p style="color:#9e9e9e;font-size:13px;">Belum ada akun.</p>' :
+    `<table class="table mb-0" style="font-size:13px;">
+      <thead><tr class="table-head"><th>Username</th><th>Role</th><th>Aksi</th></tr></thead>
+      <tbody>${users.map((u, i) => `
+        <tr class="table-body">
+          <td><i class="fa-solid fa-user me-2 text-primary"></i>${u.user}</td>
+          <td><span style="background:${u.role==='admin'?'#e3f2fd':'#f3e5f5'};color:${u.role==='admin'?'#1565c0':'#6a1b9a'};padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;">${u.role.toUpperCase()}</span></td>
+          <td>${u.role !== 'admin' ? `<button onclick="deleteUser(${i})" style="background:#ffebee;color:#c62828;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;"><i class="fa-solid fa-trash"></i> Hapus</button>` : '<span style="color:#9e9e9e;font-size:12px;">—</span>'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function addUser() {
+  const uname = document.getElementById('newUsername').value.trim();
+  const upass = document.getElementById('newUserPass').value;
+  const msgEl = document.getElementById('userMsg');
+  if (!uname || !upass) {
+    msgEl.innerHTML = '<div class="alert alert-warning py-2 mb-0" style="font-size:13px;">Isi username dan password.</div>'; return;
+  }
+  if (upass.length < 4) {
+    msgEl.innerHTML = '<div class="alert alert-warning py-2 mb-0" style="font-size:13px;">Password minimal 4 karakter.</div>'; return;
+  }
+  const users = getAllUsers();
+  if (users.find(u => u.user === uname)) {
+    msgEl.innerHTML = '<div class="alert alert-danger py-2 mb-0" style="font-size:13px;">Username sudah ada.</div>'; return;
+  }
+  users.push({ user: uname, pass: upass, role: 'viewer' });
+  saveAllUsers(users);
+  msgEl.innerHTML = '<div class="alert alert-success py-2 mb-0" style="font-size:13px;"><i class="fa-solid fa-check me-1"></i>Akun berhasil ditambahkan.</div>';
+  document.getElementById('newUsername').value = '';
+  document.getElementById('newUserPass').value = '';
+  renderUserList();
+}
+
+function deleteUser(idx) {
+  const users = getAllUsers();
+  if (users[idx]?.role === 'admin') return;
+  users.splice(idx, 1);
+  saveAllUsers(users);
+  renderUserList();
 }
 
 // ===== SETTINGS =====
 function loadSettings() {
   const s = JSON.parse(localStorage.getItem('dkm_settings') || '{}');
-  if (s.sheetId) document.getElementById('sheetId').value = s.sheetId;
-  if (s.scriptUrl) document.getElementById('scriptUrl').value = s.scriptUrl;
+  document.getElementById('sheetId').value = s.sheetId || DEFAULT_SHEET_ID;
+  document.getElementById('scriptUrl').value = s.scriptUrl || DEFAULT_SCRIPT_URL;
 }
 
 function saveSettings() {
   const sheetId = document.getElementById('sheetId').value.trim();
-  const scriptUrl = document.getElementById('scriptUrl').value.trim();
+  const scriptUrl = getScriptUrl();
   localStorage.setItem('dkm_settings', JSON.stringify({ sheetId, scriptUrl }));
 
   const np = document.getElementById('newPass').value;
@@ -664,7 +724,7 @@ function namaBulanFull(i) { return ['Januari','Februari','Maret','April','Mei','
 // Bekerja dari file:// karena script tag tidak kena CORS restriction
 function fetchGviz(range) {
   return new Promise((resolve, reject) => {
-    const id = document.getElementById('sheetId').value.trim();
+    const id = getSheetId();
     let url = 'https://docs.google.com/spreadsheets/d/' + id + '/gviz/tq?tqx=out:json';
     if (range) url += '&range=' + encodeURIComponent(range);
 
@@ -921,7 +981,7 @@ function resetForm() {
 document.getElementById('fTanggal').value = new Date().toISOString().split('T')[0];
 
 async function simpanTransaksi() {
-  const scriptUrl = document.getElementById('scriptUrl').value.trim();
+  const scriptUrl = getScriptUrl();
   const tgl = document.getElementById('fTanggal').value;
   const tipe = document.getElementById('fJenis').value;
   const ket = document.getElementById('fKet').value.trim();
